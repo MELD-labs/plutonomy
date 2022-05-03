@@ -169,6 +169,7 @@ optimize = optimizeWith defaultOptimizerOptions
 -- | Optimize 'Term' using given 'OptimizerOptions'.
 optimizeWith :: Ord a => OptimizerOptions -> Raw a n -> Raw a n
 optimizeWith oo = H.fromRaw >>> pipeline >>> H.toRaw
+    >>> inlineUsedOnce' -- TODO: to cleanup eliminators
   where
     enable True  xs = xs
     enable False _ = []

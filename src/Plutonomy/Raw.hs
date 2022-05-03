@@ -219,6 +219,7 @@ tt_ = Constant (Some (ValueOf DefaultUniUnit ()))
 data Arg a n
     = ArgTerm (Raw a n)
     | ArgForce
+    | ArgFun (Raw a n)
   deriving Show
 
 peelApp
@@ -234,6 +235,7 @@ peelApp = fmap ($[]) . go where
 appArgs_ :: Raw a n -> [Arg a n] -> Raw a n
 appArgs_ = foldl' f where
     f t (ArgTerm s) = t :@ s
+    f t (ArgFun s)  = s :@ t
     f t ArgForce    = force_ t
 
 weakenArg :: Arg a n -> Arg a (S n)
@@ -242,7 +244,9 @@ weakenArg = mapArgTerm weaken
 mapArgTerm :: (Raw a n -> Raw b m) -> Arg a n -> Arg b m
 mapArgTerm f (ArgTerm t) = ArgTerm (f t)
 mapArgTerm _ ArgForce    = ArgForce
+mapArgTerm f (ArgFun t)  = ArgFun (f t)
 
 traverseArgTerm :: Applicative f => (Raw a n -> f (Raw b m)) -> Arg a n -> f (Arg b m)
 traverseArgTerm f (ArgTerm t) = ArgTerm <$> f t
 traverseArgTerm _ ArgForce    = pure ArgForce
+traverseArgTerm f (ArgFun t)  = ArgFun <$> f t
