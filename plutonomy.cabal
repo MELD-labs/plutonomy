@@ -63,6 +63,13 @@ flag plutus-4710dff2e
   manual:      True
   default:     False
 
+flag plutus-babbage
+  description:
+    Assume plutus version Babbage
+
+  manual:      True
+  default:     False
+
 flag plutus-ledger
   description:
     Provide @Plutonomy.TypedScripts@ & @plutus-ledger@ functionality.
@@ -137,10 +144,10 @@ library
   x-docspec-options: -XOverloadedStrings -XDataKinds -XTypeApplications
 
   if True
-    if (flag(plutus-1efbb276e) && flag(plutus-4710dff2e))
+    if (flag(plutus-1efbb276e) && flag(plutus-4710dff2e) && flag(plutus-babbage))
       build-depends: unbuildable-multiple-plutus-version-flags-on
 
-    if (!flag(plutus-1efbb276e) && !flag(plutus-4710dff2e))
+    if (!flag(plutus-1efbb276e) && !flag(plutus-4710dff2e) && !flag(plutus-babbage))
       build-depends: unbuildable-no-plutus-version-flag
 
   if True
@@ -149,6 +156,9 @@ library
 
     if flag(plutus-4710dff2e)
       cpp-options: -DPLUTUS_VER=2
+
+    if flag(plutus-babbage)
+      cpp-options: -DPLUTUS_VER=3
 
 test-suite plutonomy-tests
   import:         comm
@@ -170,3 +180,6 @@ test-suite plutonomy-tests
 
     if flag(plutus-4710dff2e)
       cpp-options: -DPLUTUS_VER=2
+
+    if flag(plutus-babbage)
+      cpp-options: -DPLUTUS_VER=3
